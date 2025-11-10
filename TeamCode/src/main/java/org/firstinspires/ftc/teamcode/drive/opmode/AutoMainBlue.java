@@ -29,6 +29,7 @@ public class AutoMainBlue extends LinearOpMode {
     double nowPassTime = passTime.milliseconds();
     double maxPassTime = 50;
     double intakeSpeed = 1;
+    long emptyTime = 1000;
 
     // BLEH
 
@@ -50,23 +51,64 @@ public class AutoMainBlue extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
+        Pose2d poseEstimate = drive.getPoseEstimate();
 
-        Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(30, 30), Math.toRadians(45))
+        Shoot.setPower(shootPower);
+
+        Trajectory traj = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+                .splineTo(new Vector2d(72, 0), Math.toRadians(45))
                 .build();
 
         drive.followTrajectory(traj);
 
-        sleep(2000);
+        Pass.setPower(1);
+        sleep(emptyTime);
+        Pass.setPower(0);
 
-        drive.followTrajectory(
-                drive.trajectoryBuilder(traj.end(), true)
-                        .splineTo(new Vector2d(0, 0), Math.toRadians(90))
-                        .build()
-        );
+        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+                .splineTo(new Vector2d(72, 0), Math.toRadians(270))
+                .build();
 
-        drive.followTrajectory(traj);
+        drive.followTrajectory(traj1);
 
-        sleep(2000);
+        Intake.setPower(1);
+
+        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+                .splineTo(new Vector2d(72, 40), Math.toRadians(270))
+                .build();
+
+        drive.followTrajectory(traj2);
+
+
+        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+                .splineTo(new Vector2d(72, 0), Math.toRadians(45))
+                .build();
+
+        drive.followTrajectory(traj3);
+
+        Pass.setPower(1);
+        sleep(emptyTime);
+        Pass.setPower(0);
+        Intake.setPower(1);
+
+        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+                .splineTo(new Vector2d(48, 0), Math.toRadians(270))
+                .splineTo(new Vector2d(48, 60), Math.toRadians(270))
+                .build();
+
+        drive.followTrajectory(traj4);
+
+        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+                .splineTo(new Vector2d(72, 0), Math.toRadians(45))
+                .build();
+
+        drive.followTrajectory(traj4);
+
+        Pass.setPower(1);
+        sleep(emptyTime);
+        Pass.setPower(0);
+        Intake.setPower(0);
+        Shoot.setPower(0);
+
     }
 }
