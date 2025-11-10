@@ -30,7 +30,7 @@ public class AutoMainBlue extends LinearOpMode {
     double maxPassTime = 50;
     double intakeSpeed = 1;
 
-
+    // BLEH
 
     // Don't Touch
     boolean shootState = false;
