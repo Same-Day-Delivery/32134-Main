@@ -98,11 +98,11 @@ public class AutoMainBlue extends LinearOpMode {
 
         drive.followTrajectory(traj4);
 
-        Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
+        Trajectory traj5 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
                 .splineTo(new Vector2d(72, 0), Math.toRadians(45))
                 .build();
 
-        drive.followTrajectory(traj4);
+        drive.followTrajectory(traj5);
 
         Pass.setPower(1);
         sleep(emptyTime);
