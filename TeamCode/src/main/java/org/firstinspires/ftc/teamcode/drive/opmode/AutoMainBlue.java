@@ -54,6 +54,7 @@ public class AutoMainBlue extends LinearOpMode {
         Pose2d poseEstimate = drive.getPoseEstimate();
 
         Shoot.setPower(shootPower);
+        Intake.setPower(intakeSpeed);
 
         Trajectory traj = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
                 .splineTo(new Vector2d(72, 0), Math.toRadians(45))
@@ -61,17 +62,28 @@ public class AutoMainBlue extends LinearOpMode {
 
         drive.followTrajectory(traj);
 
-        Pass.setPower(1);
-        sleep(emptyTime);
-        Pass.setPower(0);
+        pass += 6;
+
+        while (pass > 0 && nowPassTime>maxPassTime) {
+            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            Pass.setTargetPosition(passRes/passDist);
+            Pass.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Pass.setPower(1);
+            while (Pass.isBusy()){
+                // keep running
+            }
+            Pass.setPower(0);
+            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            pass -= 1;
+            passTime.reset();
+        }
+
 
         Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
                 .splineTo(new Vector2d(72, 0), Math.toRadians(270))
                 .build();
 
         drive.followTrajectory(traj1);
-
-        Intake.setPower(1);
 
         Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
                 .splineTo(new Vector2d(72, 40), Math.toRadians(270))
@@ -86,10 +98,21 @@ public class AutoMainBlue extends LinearOpMode {
 
         drive.followTrajectory(traj3);
 
-        Pass.setPower(1);
-        sleep(emptyTime);
-        Pass.setPower(0);
-        Intake.setPower(1);
+        pass += 6;
+
+        if (pass > 0 && nowPassTime>maxPassTime) {
+            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            Pass.setTargetPosition(passRes/passDist);
+            Pass.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Pass.setPower(1);
+            while (Pass.isBusy()){
+                // keep running
+            }
+            Pass.setPower(0);
+            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            pass -= 1;
+            passTime.reset();
+        }
 
         Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
                 .splineTo(new Vector2d(48, 0), Math.toRadians(270))

@@ -53,6 +53,7 @@ public class TeleopMainBlue extends LinearOpMode {
     // Don't Touch
     boolean shootState = false;
     boolean inState = false;
+    boolean trackState = false;
     double pass = 0;
     double offset = 0;
     double offsetX;
@@ -93,15 +94,23 @@ public class TeleopMainBlue extends LinearOpMode {
 
 
         while (!isStopRequested()) {
-            if (gamepad1.rightBumperWasPressed()){
+
+            if(gamepad2.rightBumperWasPressed()) {
+                trackState = !trackState;
+            }
+
+            if(trackState){
                 offset = offsetX/trackSpeed;
             }
 
+            offset = offsetX/trackSpeed;
+
+
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x + offset
+                            -gamepad1.left_stick_y - gamepad2.left_stick_y/10,
+                            -gamepad1.left_stick_x - gamepad2.left_stick_x/10,
+                            -gamepad1.right_stick_x - gamepad2.right_stick_x/10 + offset
                     )
             );
 
@@ -111,7 +120,7 @@ public class TeleopMainBlue extends LinearOpMode {
 
 
             // Shooter
-            if (gamepad1.leftBumperWasPressed()) {
+            if (gamepad2.leftBumperWasPressed()) {
                 shootState = !shootState;
             }
 
@@ -125,10 +134,10 @@ public class TeleopMainBlue extends LinearOpMode {
             // Passthrough
             nowPassTime = passTime.milliseconds();
 
-            if (gamepad1.aWasPressed()) {
+            if (gamepad2.aWasPressed()) {
                 pass += 1;
             }
-            if (gamepad1.yWasPressed()) {
+            if (gamepad2.yWasPressed()) {
                 pass += 5;
             }
 
