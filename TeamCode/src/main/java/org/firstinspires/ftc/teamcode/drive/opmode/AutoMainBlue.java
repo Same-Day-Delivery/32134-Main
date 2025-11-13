@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
@@ -147,6 +148,7 @@ public class AutoMainBlue extends LinearOpMode {
         Pass.setPower(0);
         Intake.setPower(0);
         Shoot.setPower(0);
+        PoseStorage.currentPose = drive.getPoseEstimate();
 
     }
 }

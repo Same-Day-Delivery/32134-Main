@@ -21,6 +21,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -66,12 +67,13 @@ public class TeleopMainBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        /*
 
         Intake = hardwareMap.get(DcMotor.class, "frontEncoder");
         Pass = hardwareMap.get(DcMotor.class, "INTAKE");
         Shoot = hardwareMap.get(DcMotor.class, "rightEncoder");
 
-
+        */
         AprilTagProcessor aprilTag = new AprilTagProcessor.Builder()
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
@@ -87,6 +89,8 @@ public class TeleopMainBlue extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
+        drive.setPoseEstimate(PoseStorage.currentPose);
+
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
@@ -95,15 +99,18 @@ public class TeleopMainBlue extends LinearOpMode {
 
         while (!isStopRequested()) {
 
-            if(gamepad2.rightBumperWasPressed()) {
+            if(gamepad1.rightBumperWasPressed()) {
                 trackState = !trackState;
             }
 
             if(trackState){
                 offset = offsetX/trackSpeed;
             }
+            else{
+                offset = 0;
+            }
 
-            offset = offsetX/trackSpeed;
+
 
 
             drive.setWeightedDrivePower(
@@ -118,7 +125,7 @@ public class TeleopMainBlue extends LinearOpMode {
 
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-
+            /*
             // Shooter
             if (gamepad2.leftBumperWasPressed()) {
                 shootState = !shootState;
@@ -167,7 +174,7 @@ public class TeleopMainBlue extends LinearOpMode {
             else {
                 Intake.setPower(0);
             }
-
+            */
 
             // Camera
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
