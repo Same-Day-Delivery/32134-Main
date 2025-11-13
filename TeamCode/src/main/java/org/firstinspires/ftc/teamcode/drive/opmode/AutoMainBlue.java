@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -147,6 +148,8 @@ public class AutoMainBlue extends LinearOpMode {
         Pass.setPower(0);
         Intake.setPower(0);
         Shoot.setPower(0);
+
+        PoseStorage.currentPose = drive.getPoseEstimate();
 
     }
 }
