@@ -67,23 +67,10 @@ public class TeleopMainBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Intake = hardwareMap.get(DcMotor.class, "frontEncoder");
-        Pass = hardwareMap.get(DcMotor.class, "INTAKE");
-        Shoot = hardwareMap.get(DcMotor.class, "rightEncoder");
 
 
-        AprilTagProcessor aprilTag = new AprilTagProcessor.Builder()
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
-                .build();
 
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(aprilTag)
-                .build();
+
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -119,68 +106,6 @@ public class TeleopMainBlue extends LinearOpMode {
             Pose2d poseEstimate = drive.getPoseEstimate();
 
 
-            // Shooter
-            if (gamepad2.leftBumperWasPressed()) {
-                shootState = !shootState;
-            }
-
-            if (shootState) {
-                Shoot.setPower(shootPower);
-            }
-            else {
-                Shoot.setPower(0);
-            }
-
-            // Passthrough
-            nowPassTime = passTime.milliseconds();
-
-            if (gamepad2.aWasPressed()) {
-                pass += 1;
-            }
-            if (gamepad2.yWasPressed()) {
-                pass += 5;
-            }
-
-            if (pass > 0 && nowPassTime>maxPassTime) {
-                Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                Pass.setTargetPosition(passRes/passDist);
-                Pass.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Pass.setPower(1);
-                while (Pass.isBusy()){
-                    // keep running
-                }
-                Pass.setPower(0);
-                Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                pass -= 1;
-                passTime.reset();
-            }
-
-            // Intake
-
-            if (gamepad1.rightBumperWasPressed()) {
-                inState = !inState;
-            }
-
-            if (inState){
-                Intake.setPower(intakeSpeed);
-            }
-            else {
-                Intake.setPower(0);
-            }
-
-
-            // Camera
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
-
-
-            for (AprilTagDetection detection : currentDetections) {
-                if (detection.id == 20) {
-                    offsetX = detection.rawPose.x;
-                    offsetY = detection.rawPose.y;
-                    offsetZ = detection.rawPose.z;
-                }
-            }
 
 
 
@@ -189,7 +114,6 @@ public class TeleopMainBlue extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.addData("Shoot Queue:", pass);
             telemetry.addData("Inputs", gamepad1.toString());
             telemetry.update();
         }

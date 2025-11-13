@@ -44,17 +44,12 @@ public class AutoMainBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Intake = hardwareMap.get(DcMotor.class, "frontEncoder");
-        Pass = hardwareMap.get(DcMotor.class, "INTAKE");
-        Shoot = hardwareMap.get(DcMotor.class, "rightEncoder");
 
         waitForStart();
 
         if (isStopRequested()) return;
         Pose2d poseEstimate = drive.getPoseEstimate();
 
-        Shoot.setPower(shootPower);
-        Intake.setPower(intakeSpeed);
 
 // shooting position
         Trajectory traj = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
@@ -63,21 +58,7 @@ public class AutoMainBlue extends LinearOpMode {
 
         drive.followTrajectory(traj);
 
-        pass += 6;
 
-        while (pass > 0 && nowPassTime>maxPassTime) {
-            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Pass.setTargetPosition(passRes/passDist);
-            Pass.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Pass.setPower(1);
-            while (Pass.isBusy()){
-                // keep running
-            }
-            Pass.setPower(0);
-            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            pass -= 1;
-            passTime.reset();
-        }
 
 // ball set 1 (top row)
         Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
@@ -100,21 +81,7 @@ public class AutoMainBlue extends LinearOpMode {
 
         drive.followTrajectory(traj3);
 
-        pass += 6;
 
-        if (pass > 0 && nowPassTime>maxPassTime) {
-            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            Pass.setTargetPosition(passRes/passDist);
-            Pass.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            Pass.setPower(1);
-            while (Pass.isBusy()){
-                // keep running
-            }
-            Pass.setPower(0);
-            Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            pass -= 1;
-            passTime.reset();
-        }
 
 // ball set 2 (middle row)
         Trajectory traj4 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
@@ -138,15 +105,6 @@ public class AutoMainBlue extends LinearOpMode {
                 .build();
 
         drive.followTrajectory(traj6);
-
-
-
-
-        Pass.setPower(1);
-        sleep(emptyTime);
-        Pass.setPower(0);
-        Intake.setPower(0);
-        Shoot.setPower(0);
 
     }
 }

@@ -106,10 +106,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "frontEncoder");
+        leftRear = hardwareMap.get(DcMotorEx.class, "FRmotor");
+        rightRear = hardwareMap.get(DcMotorEx.class, "leftEncoder");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightEncoder");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -130,8 +130,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
