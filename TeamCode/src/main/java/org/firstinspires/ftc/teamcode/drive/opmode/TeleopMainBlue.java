@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -35,20 +36,19 @@ public class TeleopMainBlue extends LinearOpMode {
 
     // Devices
     private DcMotor Intake;
-    private DcMotor Pass;
+    private CRServo Pass1;
+    private CRServo Pass2;
     private DcMotor Shoot;
     private VisionPortal visionPortal;
-    private ElapsedTime passTime = new ElapsedTime();
 
 
     // Variables
-    double shootPower = 1;
+    double shootPower = 0.8;
     int passDist = 4;
     int passRes = 752;
-    double nowPassTime = passTime.milliseconds();
     double maxPassTime = 50;
     double intakeSpeed = 1;
-    double trackSpeed = 5;
+    double trackSpeed = 300;
 
 
 
@@ -56,9 +56,11 @@ public class TeleopMainBlue extends LinearOpMode {
     boolean shootState = false;
     boolean inState = false;
     boolean trackState = false;
+    boolean passState = false;
+    boolean Cam = false;
     double pass = 0;
     double offset = 0;
-    double offsetX;
+    double offsetX = 0;
     double offsetY;
     double offsetZ;
 
@@ -69,9 +71,17 @@ public class TeleopMainBlue extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Intake = hardwareMap.get(DcMotor.class, "frontEncoder");
-        Pass = hardwareMap.get(DcMotor.class, "INTAKE");
-        Shoot = hardwareMap.get(DcMotor.class, "rightEncoder");
+
+        Intake = hardwareMap.get(DcMotor.class, "rightEncoder");
+        Shoot = hardwareMap.get(DcMotor.class, "leftEncoder");
+
+
+
+        Pass1 = hardwareMap.get(CRServo.class, "Pass1");
+        Pass2 = hardwareMap.get(CRServo.class, "Pass2");
+        Pass1.setDirection(DcMotorSimple.Direction.REVERSE);
+        Pass2.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
         AprilTagProcessor aprilTag = new AprilTagProcessor.Builder()
@@ -82,10 +92,13 @@ public class TeleopMainBlue extends LinearOpMode {
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
                 .build();
 
+
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(aprilTag)
                 .build();
+
+
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -100,15 +113,18 @@ public class TeleopMainBlue extends LinearOpMode {
         while (!isStopRequested()) {
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-            if(gamepad2.rightBumperWasPressed()) {
+            if(gamepad1.dpadUpWasPressed()) {
                 trackState = !trackState;
             }
 
             if(trackState){
-                offset = offsetX/trackSpeed;
+                offset = offsetX / trackSpeed;
+            }
+            else {
+                offset = 0;
             }
 
-            offset = offsetX/trackSpeed;
+
             if(gamepad1.left_stick_button) {
                 Vector2d input = new Vector2d(
                         -gamepad1.left_stick_y,
@@ -141,40 +157,52 @@ public class TeleopMainBlue extends LinearOpMode {
 
 
             // Shooter
-            if (gamepad2.leftBumperWasPressed()) {
+
+
+            if (gamepad1.leftBumperWasPressed()) {
                 shootState = !shootState;
             }
 
             if (shootState) {
                 Shoot.setPower(shootPower);
+
             }
-            else {
+            else{
                 Shoot.setPower(0);
             }
 
+
+
+
             // Passthrough
-            nowPassTime = passTime.milliseconds();
 
-            if (gamepad2.aWasPressed()) {
-                pass += 1;
-            }
-            if (gamepad2.yWasPressed()) {
-                pass += 5;
+            if(gamepad1.aWasPressed()){
+                passState = !passState;
             }
 
-            if (pass > 0 && nowPassTime>maxPassTime) {
-                Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                Pass.setTargetPosition(passRes/passDist);
-                Pass.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                Pass.setPower(1);
-                while (Pass.isBusy()){
-                    // keep running
-                }
-                Pass.setPower(0);
-                Pass.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                pass -= 1;
-                passTime.reset();
+            if(passState){
+                Pass1.setPower(0.5);
             }
+            else {
+                Pass1.setPower(0);
+            }
+
+
+            if(gamepad1.bWasPressed()){
+                passState = !passState;
+            }
+
+            if(passState){
+                Pass2.setPower(0.5);
+            }
+            else {
+                Pass2.setPower(0);
+            }
+
+
+
+
+
 
             // Intake
 
@@ -190,18 +218,35 @@ public class TeleopMainBlue extends LinearOpMode {
             }
 
 
+
+
             // Camera
             List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-
-
-
             for (AprilTagDetection detection : currentDetections) {
+                Cam = true;
                 if (detection.id == 20) {
                     offsetX = detection.rawPose.x;
                     offsetY = detection.rawPose.y;
                     offsetZ = detection.rawPose.z;
                 }
+                else{
+                    offsetX = 0;
+                    offsetY = 0;
+                    offsetZ = 0;
+                }
             }
+            if (!Cam){
+                offsetX = 0;
+                offsetY = 0;
+                offsetZ = 0;
+            }
+            else{
+                Cam = false;
+            }
+
+
+
+
 
 
 
@@ -209,11 +254,17 @@ public class TeleopMainBlue extends LinearOpMode {
 
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("camera x", offsetX);
+            telemetry.addData("camera y", offsetY);
+            telemetry.addData("camera speed", offset);
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.addData("Shoot Queue:", pass);
             telemetry.addData("Inputs", gamepad1.toString());
             telemetry.update();
         }
+
         visionPortal.close();
+        
+
     }
 }
