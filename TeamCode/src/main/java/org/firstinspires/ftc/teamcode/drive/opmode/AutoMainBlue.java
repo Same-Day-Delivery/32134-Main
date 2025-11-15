@@ -59,11 +59,12 @@ public class AutoMainBlue extends LinearOpMode {
 
 // shooting position
         Trajectory traj = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .splineTo(new Vector2d(72, 0), Math.toRadians(45))
+                .lineTo(new Vector2d(72, 0)
                 .build();
-
         drive.followTrajectory(traj);
+// insert turning
 
+// insert shoot code
         pass += 6;
 
         while (pass > 0 && nowPassTime>maxPassTime) {
