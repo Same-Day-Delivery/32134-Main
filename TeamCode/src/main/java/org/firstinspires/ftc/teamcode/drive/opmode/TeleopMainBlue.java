@@ -58,6 +58,7 @@ public class TeleopMainBlue extends LinearOpMode {
     boolean trackState = false;
     boolean passState = false;
     boolean pass2State = false;
+    boolean ejectState = false;
     boolean Cam = false;
     double pass = 0;
     double offset = 0;
@@ -149,9 +150,9 @@ public class TeleopMainBlue extends LinearOpMode {
 
                 drive.setWeightedDrivePower(
                         new Pose2d(
-                                - gamepad1.left_stick_y  - Math.pow(gamepad2.left_stick_y, 3) / 10,
-                                - (Math.pow(gamepad1.left_stick_x, 1.9)) - Math.pow(gamepad2.left_stick_x, 3) / 10,
-                                Math.pow(gamepad1.right_stick_x, 1.9) + Math.pow(gamepad2.right_stick_x, 3) / 10 + offset
+                                - gamepad1.left_stick_y  - gamepad2.left_stick_y/ 10,
+                                - gamepad1.left_stick_x - gamepad2.left_stick_x / 10,
+                                gamepad1.right_stick_x + gamepad2.right_stick_x / 10 + offset
                         )
                 );
             }
@@ -163,7 +164,7 @@ public class TeleopMainBlue extends LinearOpMode {
             // Shooter
 
 
-            if (gamepad2.leftBumperWasPressed()) {
+            if (gamepad2.bWasPressed()) {
                 shootState = !shootState;
             }
 
@@ -185,21 +186,11 @@ public class TeleopMainBlue extends LinearOpMode {
             }
 
             if(passState){
-                Pass1.setPower(0.75);
+                Pass1.setPower(0.85);
+                Pass2.setPower(0.85);
             }
             else {
                 Pass1.setPower(0);
-            }
-
-
-            if(gamepad2.bWasPressed()){
-                pass2State = !pass2State;
-            }
-
-            if(pass2State){
-                Pass2.setPower(0.75);
-            }
-            else {
                 Pass2.setPower(0);
             }
 
@@ -208,9 +199,12 @@ public class TeleopMainBlue extends LinearOpMode {
 
 
 
+
+
+
             // Intake
 
-            if (gamepad2.rightBumperWasPressed()) {
+            if (gamepad2.xWasPressed()) {
                 inState = !inState;
             }
 
@@ -220,6 +214,23 @@ public class TeleopMainBlue extends LinearOpMode {
             else {
                 Intake.setPower(0);
             }
+
+            // Eject
+            if(gamepad2.yWasPressed()){
+                ejectState = !ejectState;
+            }
+
+            while(ejectState){
+                if(gamepad2.yWasPressed()){
+                    ejectState = !ejectState;
+                }
+                Intake.setPower(-1);
+                Pass1.setPower(-0.8);
+                Pass2.setPower(-0.8);
+            }
+
+
+
 
 
 

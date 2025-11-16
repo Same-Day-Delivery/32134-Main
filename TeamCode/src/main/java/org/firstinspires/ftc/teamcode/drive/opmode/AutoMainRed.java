@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,14 +8,14 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.PoseStorage;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "drive")
-public class AutoMainBlue extends LinearOpMode {
+public class AutoMainRed extends LinearOpMode {
     // Devices
     private DcMotor Intake;
     private CRServo Pass1;
@@ -60,7 +59,7 @@ public class AutoMainBlue extends LinearOpMode {
         if (isStopRequested()) return;
         Pose2d poseEstimate = drive.getPoseEstimate();
 
-        drive.setPoseEstimate(new Pose2d(60, 9, Math.toRadians(0)));
+        drive.setPoseEstimate(new Pose2d(84, 9, Math.toRadians(0)));
 
 
 
@@ -69,20 +68,20 @@ public class AutoMainBlue extends LinearOpMode {
 
 // shooting position
         Trajectory traj = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .lineToLinearHeading(new Pose2d(60,84, Math.toRadians(45)))
+                .lineToLinearHeading(new Pose2d(84,84, Math.toRadians(-45)))
                 .build();
         drive.followTrajectory(traj);
 
         Shoot.setPower(shootPower);
-        Pass1.setPower(1);
-        Pass2.setPower(1);
+        Pass1.setPower(0.8);
+        Pass2.setPower(0.8);
         Intake.setPower(1);
-        sleep(3000);
+        wait(3000);
         Shoot.setPower(0);
 
         Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .lineToLinearHeading(new Pose2d(60,36, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(0, 36, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(84,36, Math.toRadians(270)))
+                .lineToLinearHeading(new Pose2d(144, 36, Math.toRadians(270)))
                 .build();
         drive.followTrajectory(traj1);
 
@@ -92,10 +91,17 @@ public class AutoMainBlue extends LinearOpMode {
         Intake.setPower(0);
 
         Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .lineToLinearHeading(new Pose2d(60,36, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(60, 84, Math.toRadians(45)))
+                .lineToLinearHeading(new Pose2d(84,36, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(84, 84, Math.toRadians(-45)))
                 .build();
         drive.followTrajectory(traj2);
+
+        Shoot.setPower(shootPower);
+        Pass1.setPower(0.8);
+        Pass2.setPower(0.8);
+        Intake.setPower(1);
+        wait(3000);
+        Shoot.setPower(0);
 
         PoseStorage.currentPose = drive.getPoseEstimate();
 
