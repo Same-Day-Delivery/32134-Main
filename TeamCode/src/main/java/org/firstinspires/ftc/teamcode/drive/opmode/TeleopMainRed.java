@@ -103,19 +103,7 @@ public class TeleopMainRed extends LinearOpMode {
         while (!isStopRequested()) {
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-            if(gamepad2.dpadUpWasPressed()) {
-                trackState = !trackState;
-            }
-            if(gamepad1.rightBumperWasPressed()) {
-                trackState = !trackState;
-            }
 
-            if(trackState){
-                offset = offsetX / trackSpeed;
-            }
-            else {
-                offset = 0;
-            }
 
 
             if(gamepad1.left_stick_button) {
@@ -152,7 +140,7 @@ public class TeleopMainRed extends LinearOpMode {
             // Shooter
 
 
-            if (gamepad2.leftBumperWasPressed()) {
+            if (gamepad1.leftBumperWasPressed()) {
                 shootState = !shootState;
             }
 
@@ -169,9 +157,10 @@ public class TeleopMainRed extends LinearOpMode {
 
             // Passthrough
 
-            if(gamepad2.aWasPressed()){
+            if(gamepad1.aWasPressed()){
                 passState = !passState;
             }
+
 
             if(passState){
                 Pass1.setPower(1);
@@ -191,7 +180,7 @@ public class TeleopMainRed extends LinearOpMode {
 
             // Intake
 
-            if (gamepad2.xWasPressed()) {
+            if (gamepad1.xWasPressed()) {
                 inState = !inState;
             }
 
@@ -202,19 +191,7 @@ public class TeleopMainRed extends LinearOpMode {
                 Intake.setPower(0);
             }
 
-            // Eject
-            if(gamepad2.yWasPressed()){
-                ejectState = !ejectState;
-            }
 
-            while(ejectState){
-                if(gamepad2.yWasPressed()){
-                    ejectState = !ejectState;
-                }
-                Intake.setPower(-1);
-                Pass1.setPower(-1);
-                Pass2.setPower(-1);
-            }
 
 
 
@@ -238,18 +215,6 @@ public class TeleopMainRed extends LinearOpMode {
                 }
             }
 
-            // Macros
-            if (gamepad1.aWasPressed()){
-                drive.turn(45);
-            }
-
-            if (gamepad1.bWasPressed()){
-                drive.turn(90);
-
-            }
-            if (gamepad1.yWasPressed()){
-                drive.turn(135);
-            }
 
 
 
