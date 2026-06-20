@@ -19,9 +19,9 @@ import org.firstinspires.ftc.teamcode.drive.PoseStorage;
 public class AutoMainBlue extends LinearOpMode {
     // Devices
     private DcMotor Intake;
-    private CRServo Pass1;
-    private CRServo Pass2;
-    private DcMotor Shoot;
+    private DcMotor ShootL;
+
+    private DcMotor ShootR;
 
     private ElapsedTime passTime = new ElapsedTime();
 
@@ -49,10 +49,12 @@ public class AutoMainBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Intake = hardwareMap.get(DcMotor.class, "rightEncoder");
-        Shoot = hardwareMap.get(DcMotor.class, "leftEncoder");
-        Pass1 = hardwareMap.get(CRServo.class, "Pass1");
-        Pass2 = hardwareMap.get(CRServo.class, "Pass2");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
+        ShootL = hardwareMap.get(DcMotor.class, "shootLeft");
+        ShootR = hardwareMap.get(DcMotor.class, "shootRight");
+
+        ShootL.setDirection(DcMotorSimple.Direction.REVERSE);
+        ShootL.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         waitForStart();
@@ -64,40 +66,18 @@ public class AutoMainBlue extends LinearOpMode {
 
 
 
-        Shoot.setPower(shootPower);
+        ShootL.setPower(shootPower);
+        ShootR.setPower(shootPower);
         Intake.setPower(intakeSpeed);
 
-// shooting position
-        Trajectory traj = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .lineToLinearHeading(new Pose2d(60,84, Math.toRadians(45)))
-                .build();
-        drive.followTrajectory(traj);
+        wait(2000);
 
-        Shoot.setPower(shootPower);
-        Pass1.setPower(1);
-        Pass2.setPower(1);
-        Intake.setPower(1);
-        sleep(3000);
-        Shoot.setPower(0);
-
-        Trajectory traj1 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .lineToLinearHeading(new Pose2d(60,36, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(0, 36, Math.toRadians(90)))
-                .build();
-        drive.followTrajectory(traj1);
-
-        Shoot.setPower(0);
-        Pass1.setPower(0);
-        Pass2.setPower(0);
+        ShootR.setPower(0);
+        ShootL.setPower(0);
         Intake.setPower(0);
 
-        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), poseEstimate.getHeading()))
-                .lineToLinearHeading(new Pose2d(60,36, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(60, 84, Math.toRadians(45)))
-                .build();
-        drive.followTrajectory(traj2);
+// shooting position
 
-        PoseStorage.currentPose = drive.getPoseEstimate();
 
     }
 }
