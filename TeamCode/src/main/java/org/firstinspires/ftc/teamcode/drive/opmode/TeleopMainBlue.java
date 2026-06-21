@@ -36,35 +36,22 @@ public class TeleopMainBlue extends LinearOpMode {
 
     // Devices
     private DcMotor Intake;
-    private CRServo Pass1;
-    private CRServo Pass2;
-    private DcMotor Shoot;
-    private VisionPortal visionPortal;
+    private DcMotor ShootL;
+    private DcMotor ShootR;
 
 
     // Variables
     double shootPower = 0.8;
-    int passDist = 4;
-    int passRes = 752;
-    double maxPassTime = 50;
     double intakeSpeed = 1;
-    double trackSpeed = 300;
 
 
 
     // Don't Touch
     boolean shootState = false;
     boolean inState = false;
-    boolean trackState = false;
+
     boolean passState = false;
-    boolean pass2State = false;
-    boolean ejectState = false;
-    boolean Cam = false;
-    double pass = 0;
-    double offset = 0;
-    double offsetX = 0;
-    double offsetY;
-    double offsetZ;
+
 
 
 
@@ -74,31 +61,14 @@ public class TeleopMainBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
 
-        Intake = hardwareMap.get(DcMotor.class, "rightEncoder");
-        Shoot = hardwareMap.get(DcMotor.class, "leftEncoder");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
+        ShootL = hardwareMap.get(DcMotor.class, "shootLeft");
+        ShootR = hardwareMap.get(DcMotor.class, "shootRight");
+
+        ShootR.setDirection(DcMotorSimple.Direction.REVERSE);
+        ShootL.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
-
-        Pass1 = hardwareMap.get(CRServo.class, "Pass1");
-        Pass2 = hardwareMap.get(CRServo.class, "Pass2");
-        Pass1.setDirection(DcMotorSimple.Direction.REVERSE);
-        Pass2.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-
-        AprilTagProcessor aprilTag = new AprilTagProcessor.Builder()
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
-                .build();
-
-
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .addProcessor(aprilTag)
-                .build();
 
 
 
@@ -115,47 +85,24 @@ public class TeleopMainBlue extends LinearOpMode {
         while (!isStopRequested()) {
             Pose2d poseEstimate = drive.getPoseEstimate();
 
-            if(gamepad2.dpadUpWasPressed()) {
-                trackState = !trackState;
-            }
-            if(gamepad1.rightBumperWasPressed()) {
-                trackState = !trackState;
-            }
-
-            if(trackState){
-                offset = offsetX / trackSpeed;
-            }
-            else {
-                offset = 0;
-            }
 
 
-            if(gamepad1.left_stick_button) {
-                Vector2d input = new Vector2d(
-                        -gamepad1.left_stick_y,
-                        -gamepad1.left_stick_x
-                ).rotated(-poseEstimate.getHeading());
 
-                // Pass in the rotated input + right stick value for rotation
-                // Rotation is not part of the rotated input thus must be passed in separately
-                drive.setWeightedDrivePower(
-                        new Pose2d(
-                                input.getX(),
-                                input.getY(),
-                                gamepad1.right_stick_x
-                        )
-                );
-            }
-            else {
 
-                drive.setWeightedDrivePower(
-                        new Pose2d(
-                                - gamepad1.left_stick_y  - gamepad2.left_stick_y/ 10,
-                                - gamepad1.left_stick_x - gamepad2.left_stick_x / 10,
-                                gamepad1.right_stick_x + gamepad2.right_stick_x / 10 + offset
-                        )
-                );
-            }
+            Vector2d input = new Vector2d(
+                    gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x
+                    ).rotated(-poseEstimate.getHeading());
+
+            // Pass in the rotated input + right stick value for rotation
+            // Rotation is not part of the rotated input thus must be passed in separately
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            input.getX(),
+                            input.getY(),
+                            gamepad1.right_stick_x
+                    )
+            );
             drive.update();
 
 
@@ -164,34 +111,20 @@ public class TeleopMainBlue extends LinearOpMode {
             // Shooter
 
 
-            if (gamepad2.bWasPressed()) {
+            if (gamepad1.bWasPressed()) {
                 shootState = !shootState;
             }
 
             if (shootState) {
-                Shoot.setPower(shootPower);
+                ShootL.setPower(shootPower);
+                ShootR.setPower(shootPower);
+                Intake.setPower(intakeSpeed);
 
             }
             else{
-                Shoot.setPower(0);
-            }
-
-
-
-
-            // Passthrough
-
-            if(gamepad2.aWasPressed()){
-                passState = !passState;
-            }
-
-            if(passState){
-                Pass1.setPower(0.85);
-                Pass2.setPower(0.85);
-            }
-            else {
-                Pass1.setPower(0);
-                Pass2.setPower(0);
+                ShootL.setPower(0.05);
+                ShootR.setPower(0.05);
+                Intake.setPower(0);
             }
 
 
@@ -204,7 +137,7 @@ public class TeleopMainBlue extends LinearOpMode {
 
             // Intake
 
-            if (gamepad2.xWasPressed()) {
+            if (gamepad1.xWasPressed()) {
                 inState = !inState;
             }
 
@@ -215,19 +148,6 @@ public class TeleopMainBlue extends LinearOpMode {
                 Intake.setPower(0);
             }
 
-            // Eject
-            if(gamepad2.yWasPressed()){
-                ejectState = !ejectState;
-            }
-
-            while(ejectState){
-                if(gamepad2.yWasPressed()){
-                    ejectState = !ejectState;
-                }
-                Intake.setPower(-1);
-                Pass1.setPower(-0.8);
-                Pass2.setPower(-0.8);
-            }
 
 
 
@@ -235,34 +155,7 @@ public class TeleopMainBlue extends LinearOpMode {
 
 
 
-            // Camera
-            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-            for (AprilTagDetection detection : currentDetections) {
-                Cam = true;
-                if (detection.id == 20) {
-                    offsetX = detection.rawPose.x;
-                    offsetY = detection.rawPose.y;
-                    offsetZ = detection.rawPose.z;
-                }
-                else{
-                    offsetX = 0;
-                    offsetY = 0;
-                    offsetZ = 0;
-                }
-            }
 
-            // Macros
-            if (gamepad1.aWasPressed()){
-                drive.turn(45);
-            }
-
-            if (gamepad1.bWasPressed()){
-                drive.turn(90);
-
-            }
-            if (gamepad1.yWasPressed()){
-                drive.turn(135);
-            }
 
 
 
@@ -273,16 +166,10 @@ public class TeleopMainBlue extends LinearOpMode {
 
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("camera x", offsetX);
-            telemetry.addData("camera y", offsetY);
-            telemetry.addData("camera speed", offset);
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.addData("Shoot Queue:", pass);
             telemetry.addData("Inputs", gamepad1.toString());
             telemetry.update();
         }
-
-        visionPortal.close();
         
 
     }

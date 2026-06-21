@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -53,7 +54,7 @@ public class AutoMainBlue extends LinearOpMode {
         ShootL = hardwareMap.get(DcMotor.class, "shootLeft");
         ShootR = hardwareMap.get(DcMotor.class, "shootRight");
 
-        ShootL.setDirection(DcMotorSimple.Direction.REVERSE);
+        ShootR.setDirection(DcMotorSimple.Direction.REVERSE);
         ShootL.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
@@ -70,7 +71,7 @@ public class AutoMainBlue extends LinearOpMode {
         ShootR.setPower(shootPower);
         Intake.setPower(intakeSpeed);
 
-        wait(2000);
+        sleep(2000);
 
         ShootR.setPower(0);
         ShootL.setPower(0);
